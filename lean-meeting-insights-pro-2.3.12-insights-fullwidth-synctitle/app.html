@@ -1,0 +1,88 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Lean Meeting Insights Pro 1.7.7.15</title>
+  <link rel="stylesheet" href="styles.css"/>
+<style>
+/* --- Coach Panel Ordering & Tag Colors --- */
+#coachQuestionsSection { order: 99; } /* ensure it appears as the last panel in a CSS grid/flex layout */
+
+.list .row { display: flex; align-items: flex-start; gap: 8px; padding: 6px 8px; border-radius: 8px; border: 1px solid var(--line, #e5e7eb); background: var(--card, #fff); }
+.list .row + .row { margin-top: 6px; }
+.badge { display:inline-block; font-size: 11px; line-height: 1; padding: 5px 7px; border-radius: 999px; border: 1px solid transparent; white-space: nowrap; }
+/* Remapped to semantic tokens */
+.badge.risk     { background: var(--warning-bg); color: var(--warning-fg); border-color: var(--warning-border); }
+.badge.issue    { background: var(--danger-bg);  color: var(--danger-fg);  border-color: var(--danger-border); }
+.badge.concern  { background: var(--info-bg);    color: var(--info-fg);    border-color: var(--info-border); }
+.badge.decision { background: var(--success-bg); color: var(--success-fg); border-color: var(--success-border); }
+.badge.clarify  { background: var(--info-bg);    color: var(--info-fg);    border-color: var(--info-border); }
+.badge.plan     { background: var(--info-bg);    color: var(--info-fg);    border-color: var(--info-border); }
+.badge.default  { background: var(--info-bg);    color: var(--info-fg);    border-color: var(--info-border); }
+.row .text { flex: 1 1 auto; font-size: 13px; line-height: 1.25; }
+</style><style>
+/* Coach panel: force full-width placement at bottom */
+#coachQuestionsSection {
+  order: 99;
+  width: 100%;
+  grid-column: 1 / -1;
+  flex: 1 1 100%;
+}
+</style><style>
+/* Panel order & full-width for Insights and Coach */
+#summarySection { order: 10; }
+#goalsSection { order: 20; }
+#actionsSection { order: 30; }
+#questionsSection { order: 40; }
+#insightsSection { order: 50; width:100%; grid-column: 1 / -1; flex: 1 1 100%; }
+#coachQuestionsSection { order: 60; width:100%; grid-column: 1 / -1; flex: 1 1 100%; }
+</style></head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">🎧</span>
+      <strong id="appTitle">Lean Meeting Insights Pro</strong>
+      <span class="ver" id="appVersion"></span>
+    </div>
+    <div class="controls">
+      <label>Model <input id="modelInput" type="text" size="14" placeholder="llama3.1:8b"/></label>
+      <label>Text <select id="textScale"><option>90</option><option>100</option><option>110</option><option>120</option><option>125</option><option>140</option><option>160</option><option>180</option></select>%</label>
+      <label class="switch"><input type="checkbox" id="lowPower"/><span>Low Power</span></label>
+      <label>Theme <select id="themeSelect"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select></label>
+      <button id="btnMicToggle" class="btn btn-primary" data-state="stopped" title="Start/Stop mic">🎙 Start</button>
+      <button id="btnFullscreen" class="btn" title="Toggle fullscreen">⛶ Fullscreen</button>
+      <button id="btnOpenTab" class="btn" title="Open in new tab">↗ Open Tab</button>
+      <button id="btnExportPDF" class="btn" title="Export panels to PDF" style="display:none">🖨 Export PDF</button>
+    </div>
+  </header>
+
+  <main class="grid">
+    <section class="panel span-full">
+      <header>Live Transcript</header>
+      <div id="liveTranscript" aria-live="polite" aria-atomic="false"></div>
+    </section>
+    <section class="panel"><header>Summary</header><div id="summary"></div></section>
+    <section class="panel"><header>Goals</header><div id="goals"></div></section>
+    <section class="panel"><header>Action Items</header><div id="actions"></div></section>
+    <section class="panel"><header>Productive Questions</header><div id="questions"></div><div id="qaSection"><h3 style="margin:10px 0 6px;color:var(--muted);font-weight:600">Q&A (AI answers)</h3><div id="qa" class="qna"></div></div></section>
+
+<!-- Intelligent Questions (LLM) -->
+<section id="coachQuestionsSection" class="panel panel--coach">
+  <header>Intelligent Questions</header>
+  <div id="coachQuestions" class="list"></div>
+</section>
+
+    <section id="insightsSection" class="panel span-full"><header>Insights</header><div id="insights"></div></section>
+
+    <section id="errorsSection" class="panel span-full">
+      <header>Errors</header>
+      <div id="errors" class="errors"></div>
+    </section>
+  </main>
+
+  
+  <script type="module" src="speech.js"></script>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+{
+  "ollama": {
+    "endpoint": "http://localhost:11434",
+    "model": "llama3.1:8b",
+    "num_ctx": 8192,
+    "temperature": 0.2,
+    "num_predict": 512
+  },
+  "ui": {
+    "default_text_scale": 100,
+    "low_power": false
+  },
+  "recognition": {
+    "lang": "en-US"
+  },
+  "refresh": {
+    "normal_ms": 5000,
+    "low_power_ms": 7000,
+    "hidden_ms": 15000,
+    "quiet_after_ms": 30000,
+    "quiet_ms": 20000
+  },
+  "version_label": "lean-meeting-insights-pro-2.3.12-STABLE.zip",
+  "stable": true,
+  "stable_marked_at": "2025-09-01T00:00:00Z"
+}

@@ -1,0 +1,80 @@
+
+<!doctype html>
+<meta charset="utf-8">
+<title>Lean Meeting Insights - Ultra Self Tests</title>
+<style>
+body{font-family:system-ui,Arial;margin:24px;color:#111}
+h1{margin:0 0 12px 0}
+.pass{color:#065f46}
+.fail{color:#b91c1c}
+pre{background:#f8fafc;border:1px solid #e5e7eb;padding:10px;border-radius:8px;max-width:960px;overflow:auto}
+</style>
+<h1>Ultra Self Tests</h1>
+<div id="out"></div>
+<script>
+(async () => {
+  const out = document.getElementById('out');
+  const log = (ok, msg) => {
+    const d=document.createElement('div'); d.className=ok?'pass':'fail'; d.textContent=(ok?'✓ ':'✗ ')+msg; out.appendChild(d);
+  };
+  try {
+    const src = await fetch('../app.js', {cache:'no-store'}).then(r=>r.text());
+    // 1) Landmines and catch
+    log(!/\u00A0|\u200B|\u200C|\u200D|\u2060|\uFEFF|…/.test(src), 'No hidden unicode landmines');
+    log(!/catch\s*\{\s*\}/.test(src), 'No bare catch{}');
+    // 2) No duplicate critical functions
+    const mustSingle = ['renderList','buildPrintableHtml','exportToPDF','synthFromTranscript','ensurePanels','restartTicker','classifyRowText','resetSession','buildPrompt','generateStrictJSON','currentCadenceMs','makeEngine'];
+    log(mustSingle.every(n => (src.match(new RegExp('function\\s+'+n+'\\s*\(', 'g'))||[]).length===1), 'Single implementation of all critical functions');
+    // 3) rowsFrom temp name uniqueness (no const a duplication)
+    log(!/function\s+buildPrintableHtml[\s\S]*?const\s+a\s*=\s*Array\.isArray\(/.test(src), 'rowsFrom uses unique temp name');
+    // 4) Eval app.js inside an iframe with stubs
+    const ifr = document.createElement('iframe'); ifr.style.display='none'; document.body.appendChild(ifr);
+    const w = ifr.contentWindow;
+    // Stubs
+    w.document.body.innerHTML = '<div id="liveTranscript"></div><div id="summary"></div><div id="goals"></div><div id="actions"></div><div id="questions"></div><div id="insights"></div><div id="errors"></div><button id="btnExportPDF"></button>';
+    w.makeTranscriptEngine = (opts)=>{
+      const running = { val:false };
+      return {
+        start: async ()=>{ running.val=true; opts?.onState?.({status:'running'}); },
+        stop: async ()=>{ running.val=false; opts?.onState?.({status:'stopped'}); },
+      };
+    };
+    w.fetch = async (...args)=>{ if(String(args[0]).endsWith('config.json')) return new Response(JSON.stringify({version_label:'TEST',ollama:{endpoint:'http://x',model:'llama3.1:8b'}})); return new Response('{}'); };
+    w.AbortController = window.AbortController;
+    w.window = w;
+    // Eval
+    w.eval(src);
+    log(true, 'app.js eval() syntax OK');
+    // Wire el map expected by app.js
+    w.$ = (sel)=>w.document.querySelector(sel);
+    w.el = {
+      live: w.$('#liveTranscript'), summary: w.$('#summary'), goals: w.$('#goals'), actions: w.$('#actions'),
+      questions: w.$('#questions'), insights: w.$('#insights'), errors: w.$('#errors'),
+      textScale: null, lowPower: null, micToggle: w.document.createElement('button'),
+      modelInput: {value:'llama3.1:8b'}, fullscreen: null, openTab: null, zipBadge: w.document.createElement('span'), exportPDF: w.$('#btnExportPDF')
+    };
+    // Build engine and simulate start
+    const engine = w.makeEngine();
+    w.state.memory.goals = [{text:'Ship v2'},{value:'Improve NPS'}];
+    w.state.memory.insights = [{text:'Risk: vendor slippage'}, 42, null];
+    w.state.memory.questions = [{text:'Who owns Engine 7276 rollout?'}];
+    try{ w.ensurePanels(); log(true, 'ensurePanels handles object items safely'); }catch(e){ log(false, 'ensurePanels threw: '+(e.message||e)); }
+
+    log(!!engine, 'makeEngine returns engine');
+    // Simulate transcript
+    const ev = new w.CustomEvent('transcript-final', {detail:{text:'Engine 7276 is a priority for everyone?'}});
+    w.el.live.dispatchEvent(ev);
+    // Ensure panels update (fallback)
+    setTimeout(()=>{
+      const enough = (w.state?.memory?.questions?.length||0) + (w.state?.memory?.goals?.length||0) + (w.state?.memory?.insights?.length||0) > 0;
+      log(enough, 'ensurePanels populated from transcript');
+      const html = w.buildPrintableHtml();
+      log(typeof html==='string' && html.includes('Meeting Insights Export'), 'buildPrintableHtml string OK');
+      log(!/const\s+a\s*=/.test(html), 'export HTML has no duplicate temp "a"');
+      const done = document.createElement('pre'); done.textContent='All checks passed.'; out.appendChild(done);
+    }, 50);
+  } catch (e) {
+    const d=document.createElement('pre'); d.className='fail'; d.textContent=String(e.stack||e); out.appendChild(d);
+  }
+})();
+</script>

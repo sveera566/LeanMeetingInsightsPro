@@ -1,0 +1,8 @@
+{
+  "stable": true,
+  "version": "2.3.12",
+  "tag": "stable",
+  "zip": "lean-meeting-insights-pro-2.3.12-STABLE.zip",
+  "marked_at_utc": "2025-09-01T00:00:00Z",
+  "notes": "Marked as last known stable with LLM-only sections, Intelligent Questions anchoring, Q&A with challenges, Start/Stop fixes, UI polish, and theme support."
+}

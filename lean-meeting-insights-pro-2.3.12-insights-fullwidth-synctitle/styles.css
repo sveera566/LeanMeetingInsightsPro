@@ -1,0 +1,134 @@
+:root{
+  --text-scale:1;
+  --bg:#ffffff;
+  --surface:#ffffff;
+  --fg:#111827;
+  --muted:#6b7280;
+  --border:#e5e7eb;
+  --panel-bg:#fafafa;
+  --shadow:0 1px 2px rgba(0,0,0,0.04);
+  --accent:#2563eb;
+  --brand:#3b82f6;
+  --brand-contrast:#ffffff;
+  --success-bg:#ecfdf5; --success-fg:#065f46; --success-border:#a7f3d0;
+  --warning-bg:#fffbeb; --warning-fg:#92400e; --warning-border:#fcd34d;
+  --danger-bg:#fef2f2; --danger-fg:#991b1b; --danger-border:#fecaca;
+  --info-bg:#f1f5f9; --info-fg:#334155; --info-border:#cbd5e1;
+}
+/* Dark theme overrides via data-theme */
+:root[data-theme="dark"]{
+  --bg:#0b0b0c; --surface:#0b0b0c; --fg:#e5e7eb; --muted:#9aa3af; --border:#2b2b30; --panel-bg:#0b0b0c; --shadow:none;
+  --success-bg:#0f1d19; --success-fg:#bbf7d0; --success-border:#14532d;
+  --warning-bg:#211a0f; --warning-fg:#fcd34d; --warning-border:#a16207;
+  --danger-bg:#231216; --danger-fg:#fecaca; --danger-border:#7f1d1d;
+  --info-bg:#111827; --info-fg:#cbd5e1; --info-border:#374151;
+}
+*{box-sizing:border-box}html,body{height:100%}body{margin:0;color:var(--fg);background:var(--bg);
+font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; font-size:calc(16px * var(--text-scale))}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--bg);z-index:10}
+.brand{display:flex;align-items:center;gap:8px;font-size:.95rem}.brand .logo{font-size:1.2rem}.brand .ver{color:var(--muted);margin-left:2px}
+/* zipbadge removed */
+.controls{display:flex;align-items:center;gap:10px;flex-wrap:wrap;overflow-x:visible;white-space:normal}
+.controls > *{flex:0 1 auto}
+.controls label{display:inline-flex;align-items:center;gap:6px;font-size:.9rem;color:var(--muted)}
+.controls input[type=text]{padding:6px 8px;border:1px solid var(--border);border-radius:10px}.controls select{padding:4px 6px;border-radius:8px;border:1px solid var(--border)}
+button{border:1px solid var(--border);background:var(--surface);padding:7px 10px;border-radius:12px;font-size:.9rem;cursor:pointer}button:hover{border-color:var(--accent)}
+/* Professional button styles */
+.btn{border:1px solid var(--border);background:var(--surface);color:var(--fg);padding:7px 10px;border-radius:12px;font-size:.9rem;cursor:pointer;transition:border-color .15s,box-shadow .15s,background-color .15s}
+.btn:hover{border-color:var(--brand)}
+.btn:focus{outline:2px solid var(--brand);outline-offset:2px}
+.btn-primary{background:var(--brand);color:var(--brand-contrast);border-color:var(--brand)}
+.btn-primary:hover{filter:brightness(0.98)}
+.btn-ghost{background:transparent;border-color:var(--border)}
+.grid{display:grid;gap:12px;padding:12px;grid-template-columns:repeat(auto-fit,minmax(360px,1fr))}
+.panel{background:var(--panel-bg);border:1px solid var(--border);border-radius:14px;padding:8px 10px;min-height:120px;display:flex;flex-direction:column;box-shadow:var(--shadow)}
+.panel>header{font-weight:600;margin-bottom:8px;color:var(--muted)}.span-full{grid-column:1/-1}
+#liveTranscript,#summary,#goals,#actions,#questions,#insights,#errors{overflow-y:auto;max-height:46vh}
+.line.final{opacity:1}.line.interim{opacity:.65;font-style:italic}.errors{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.85em}
+@media print {
+  body { background: #fff !important; color: #000 !important; }
+  .topbar, .foot, #btnMicToggle, #btnFullscreen, #btnOpenTab, #btnExportPDF { display: none !important; }
+  .panel { background: #fff !important; border-color: #ccc !important; box-shadow: none !important; }
+  .panel>header { color: #000 !important; }
+  .grid { padding: 0 !important; gap: 8px !important; }
+  #liveTranscript, #summary, #goals, #actions, #questions, #insights, #errors { max-height: none !important; overflow: visible !important; }
+}
+
+/* Ensure Errors panel is always last and full width */
+#errorsSection{ order: 999; width:100%; grid-column: 1 / -1; }
+/* Highlight errors content when present */
+.errors.has-output{ background: var(--danger-bg); border:1px solid var(--danger-border); color: var(--danger-fg); padding:8px; border-radius:8px }
+#errorsSection.has-output > header{ color: var(--danger-fg) }
+
+/* Live transcript risk/concern highlights */
+.line.final.hl-risk{border-left:4px solid #b45309; background:#fffbeb}
+.line.final.hl-issue{border-left:4px solid #b91c1c; background:#fef2f2}
+.line.final.hl-concern{border-left:4px solid #8b5cf6; background:#f5f3ff}
+@media (prefers-color-scheme: dark){
+  .line.final.hl-risk{background:#211a0f}
+  .line.final.hl-issue{background:#231216}
+  .line.final.hl-concern{background:#191629}
+}
+
+/* Inline mitigation icon + bubble */
+.miti-info{ margin-left:6px; border:1px solid var(--border); background:#fff; color:#6b7280; font-size:12px; line-height:1; padding:2px 5px; border-radius:10px; cursor:pointer }
+.miti-info:hover{ color:#111827; border-color:#94a3b8 }
+.miti-tip{ margin-top:6px; background:#f8fafc; border:1px solid #e2e8f0; color:#111827; padding:6px 8px; border-radius:8px; font-size:12px; max-width:72ch }
+@media (prefers-color-scheme: dark){
+  .miti-info{ background:#0b0b0c; color:#cbd5e1; border-color:#2b2b30 }
+  .miti-info:hover{ color:#fff; border-color:#475569 }
+  .miti-tip{ background:#0b0b0c; border-color:#2b2b30; color:#e5e7eb }
+}
+
+/* Plain list rows (no bullets) */
+.list{display:flex;flex-direction:column;gap:6px}
+.list-row{padding:4px 6px;border-radius:8px;background:var(--surface);border:1px solid var(--border)}
+.list .emptystate{border:1px dashed var(--border);border-radius:8px;padding:8px;color:var(--muted);background:#fff}
+@media print { .list-row{background:#fff;border-color:#ccc} }
+
+
+/* === Emphasis tags for row highlights === */
+.list{display:flex;flex-direction:column;gap:6px}
+.list-row{padding:6px 8px;border-radius:10px;border:1px solid var(--border);background:#fff;display:flex;gap:8px;align-items:flex-start;transition:border-color .15s}
+.list-row:hover{border-color:var(--brand)}
+.list-row .chip{font-size:11px;line-height:1; padding:3px 6px; border-radius:999px; border:1px solid transparent; font-weight:600; white-space:nowrap}
+.tag-concern{border-left:4px solid #8b5cf6; background: #f5f3ff}
+.tag-concern .chip{background:#ede9fe;border-color:#c4b5fd;color:#5b21b6}
+.tag-risk{border-left:4px solid #b45309; background:var(--warning-bg)}
+.tag-risk .chip{background:var(--warning-bg);border-color:var(--warning-border);color:var(--warning-fg)}
+.tag-issue{border-left:4px solid #b91c1c; background:var(--danger-bg)}
+.tag-issue .chip{background:var(--danger-bg);border-color:var(--danger-border);color:var(--danger-fg)}
+.tag-decision{border-left:4px solid #047857; background:var(--success-bg)}
+.tag-decision .chip{background:var(--success-bg);border-color:var(--success-border);color:var(--success-fg)}
+
+/* Chips for status/due */
+.chip-achieved{background:var(--success-bg);border-color:var(--success-border);color:var(--success-fg)}
+.chip-pending{background:var(--warning-bg);border-color:var(--warning-border);color:var(--warning-fg)}
+.chip-due{background:var(--info-bg);border-color:var(--info-border);color:var(--info-fg)}
+/* Chips for citations/confidence */
+.chip-src{background:var(--info-bg);border-color:var(--info-border);color:var(--info-fg)}
+.chip-src:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+.miti-info:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+.chip-conf{background:#ecfeff;border-color:#a5f3fc;color:#155e75}
+
+/* Q&A block */
+.qna{display:flex;flex-direction:column;gap:8px}
+.qna .qna-row{border:1px solid var(--border);background:var(--surface);border-radius:10px;padding:8px}
+.qna .qna-row .label{display:inline-block;font-size:11px;padding:3px 6px;border-radius:999px;border:1px solid #cbd5e1;color:#1e293b;background:#f1f5f9;margin-right:6px}
+.qna .qna-row .q{font-weight:600;margin-bottom:4px}
+.qna .qna-row .a{margin-left:0}
+.qna .qna-row .challenge{margin-top:4px}
+.qna .qna-row .challenge .label{background:#f5f3ff;color:#6d28d9;border-color:#ddd6fe}
+@media (prefers-color-scheme: dark){
+  .qna .qna-row{background:#0b0b0c;border-color:#2b2b30}
+  .qna .qna-row .label{background:#111827;color:#cbd5e1;border-color:#374151}
+  .qna .qna-row .challenge .label{background:#1b1630;color:#c7bfff;border-color:#3a2f6b}
+}
+
+@media (prefers-color-scheme: dark){
+  .list-row{background:#0b0b0c;border-color:#2b2b30}
+  .tag-concern{background:#191629}
+  .tag-risk{background:#211a0f}
+  .tag-issue{background:#231216}
+  .tag-decision{background:#0f1d19}
+}
